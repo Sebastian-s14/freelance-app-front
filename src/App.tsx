@@ -1,9 +1,9 @@
+import { RouterProvider } from 'react-router-dom'
+
+import { router } from './router'
+
 function App() {
-  return (
-    <div className="container py-4 px-3 mx-auto">
-      <h1>Hello, Bootstrap and Vite!</h1>
-    </div>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App

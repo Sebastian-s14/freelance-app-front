@@ -1,0 +1,20 @@
+.login__container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+}
+
+.login__logo {
+  height: 6em;
+  padding: 1.5em;
+}
+
+.login__form {
+  max-width: 500px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-self: center;
+  width: 100%;
+}
