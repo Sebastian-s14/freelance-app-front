@@ -2,6 +2,7 @@ import { Button, Table } from 'reactstrap'
 
 import { Receipt } from '../interfaces'
 import { DownloadButton } from '.'
+import { formatDate } from '../helpers'
 
 interface ReceiptTableProps {
   receipts: Receipt[]
@@ -29,7 +30,8 @@ export const ReceiptTable = ({ receipts }: ReceiptTableProps) => {
             <td>{r.description}</td>
             {/* <td>{r.currency}</td>
             <td>{r.payment}</td> */}
-            <td>{r.createAt.toLocaleString()}</td>
+            {/* <td>{new Date(r.createAt).toLocaleDateString()}</td> */}
+            <td>{formatDate(r.createAt)}</td>
             <td style={{ display: 'flex', gap: '8px' }}>
               <DownloadButton />
               <Button color="danger" outline className="mx-3">
