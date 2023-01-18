@@ -4,7 +4,7 @@ export interface Receipt {
   receiptId: string
   userId: string
   address: string
-  createAt: Date
+  createAt: string
   currency: string
   description: string
   lastName: string
@@ -13,6 +13,6 @@ export interface Receipt {
   numberDocument: string
   payment: number
   title: string
-  typeDocument: number
+  typeDocument: string
   user: User
 }
