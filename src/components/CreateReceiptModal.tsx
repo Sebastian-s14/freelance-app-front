@@ -1,3 +1,4 @@
+import { useForm, SubmitHandler, Controller } from 'react-hook-form'
 import {
   Form,
   FormGroup,
@@ -9,7 +10,12 @@ import {
   ModalFooter,
   Button,
 } from 'reactstrap'
+import { useReceipts } from '../hooks'
 
+import { Receipt } from '../interfaces'
+
+interface FormReceipt
+  extends Omit<Receipt, 'receiptId' | 'userId' | 'user' | 'createAt'> {}
 interface CreateReceiptModalProps {
   modal: boolean
   toggle: () => void
@@ -19,67 +25,164 @@ export const CreateReceiptModal = ({
   modal,
   toggle,
 }: CreateReceiptModalProps) => {
+  const { addReceipt } = useReceipts()
+  const { control, handleSubmit } = useForm<FormReceipt>({
+    defaultValues: {
+      title: '',
+      description: '',
+      address: '',
+      name: '',
+      lastName: '',
+      currency: '',
+      logo: '',
+      numberDocument: '',
+      payment: 0,
+      typeDocument: '',
+    },
+  })
+
+  const onSubmit: SubmitHandler<FormReceipt> = (data) => {
+    console.log('on submit')
+    console.log(data)
+    addReceipt(data)
+  }
+
+  const saveReceipt = handleSubmit(onSubmit)
+
   return (
     <Modal isOpen={modal} toggle={toggle} centered scrollable size="lg">
       <ModalHeader toggle={toggle}>Crear nuevo recibo</ModalHeader>
       <ModalBody>
         <Form>
           <FormGroup>
-            <Label for="title">Title</Label>
-            <Input id="title" placeholder="Título" />
+            <Label for="title">Tìtulo</Label>
+            {/* <Input id="title" placeholder="Título" /> */}
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <Input id="title" placeholder="Título" {...field} />
+              )}
+            />
           </FormGroup>
           <FormGroup>
-            <Label for="title">Description</Label>
-            <Input id="title" placeholder="Descripción" type="textarea" />
+            <Label for="description">Descripción</Label>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  id="description"
+                  placeholder="Descripción"
+                  type="textarea"
+                  {...field}
+                />
+              )}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="name">Nombres</Label>
-            <Input id="name" placeholder="Nombres" />
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <Input id="name" placeholder="Nombres" {...field} />
+              )}
+            />
           </FormGroup>
           <FormGroup>
-            <Label for="lastname">Apellidos</Label>
-            <Input id="lastname" placeholder="Apellidos" />
+            <Label for="lastName">Apellidos</Label>
+            <Controller
+              name="lastName"
+              control={control}
+              render={({ field }) => (
+                <Input id="lastName" placeholder="Apellidos" {...field} />
+              )}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="address">Dirección de domicilio</Label>
-            <Input id="address" placeholder="Av/Calle/Mz" />
+            <Controller
+              name="address"
+              control={control}
+              render={({ field }) => (
+                <Input id="address" placeholder="Av/Calle/Mz" {...field} />
+              )}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="inputFile">Logo</Label>
-            <Input id="inputFile" name="file" type="text" />
+            <Controller
+              name="logo"
+              control={control}
+              render={({ field }) => (
+                <Input id="inputFile" type="text" {...field} />
+              )}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="select">Tipo de documento</Label>
-            <Input id="select" name="select" type="select" defaultValue="">
-              <option value="" disabled>
-                Seleccione uno
-              </option>
-              <option value={0}>DNI</option>
-              <option value={1}>RUC</option>
-            </Input>
+            <Controller
+              name="typeDocument"
+              control={control}
+              render={({ field }) => (
+                <Input id="select" type="select" defaultValue="" {...field}>
+                  <option value="" disabled>
+                    Seleccione uno
+                  </option>
+                  <option value="DNI">DNI</option>
+                  <option value="RUC">RUC</option>
+                </Input>
+              )}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="nroDocument">Nro de documento</Label>
-            <Input id="nroDocument" placeholder="77777777" />
+            <Controller
+              name="numberDocument"
+              control={control}
+              render={({ field }) => (
+                <Input id="nroDocument" placeholder="77777777" {...field} />
+              )}
+            />
           </FormGroup>
           <FormGroup>
             <Label for="select">Tipo de moneda</Label>
-            <Input id="select" name="select" type="select" defaultValue="">
-              <option value="" disabled>
-                Seleccione uno
-              </option>
-              <option value="USD">Dólares $</option>
-              <option value="PEN">Soles S/.</option>
-            </Input>
+
+            <Controller
+              name="currency"
+              control={control}
+              render={({ field }) => (
+                <Input id="select" type="select" defaultValue="" {...field}>
+                  <option value="" disabled>
+                    Seleccione uno
+                  </option>
+                  <option value="USD">Dólares $</option>
+                  <option value="PEN">Soles S/.</option>
+                </Input>
+              )}
+            />
           </FormGroup>
           <FormGroup>
-            <Label for="nroDocument">Monto a cobrar</Label>
-            <Input id="nroDocument" type="number" placeholder="1000" />
+            <Label for="payment">Monto a cobrar</Label>
+            <Controller
+              name="payment"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  id="payment"
+                  type="number"
+                  placeholder="1000"
+                  min={0}
+                  {...field}
+                />
+              )}
+            />
           </FormGroup>
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={toggle}>
+        <Button color="primary" onClick={saveReceipt}>
           Guardar
         </Button>
         <Button color="secondary" onClick={toggle}>

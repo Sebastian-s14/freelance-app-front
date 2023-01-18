@@ -13,9 +13,21 @@ export const useReceipts = () => {
       .catch(() => console.log('algo salió mal'))
   }, [])
 
+  const addReceipt = (
+    receipt: Omit<Receipt, 'receiptId' | 'userId' | 'user' | 'createAt'>,
+  ) => {
+    axios
+      .post('http://localhost:5250/api/receipt', {
+        ...receipt,
+        userId: 'fe2de405-c38e-4c90-ac52-da0540dfb410',
+      })
+      .then(({ data }) => console.log(data))
+      .catch(() => console.log('error al agregar recibo'))
+  }
+
   useEffect(() => {
     getReceipts()
   }, [getReceipts])
 
-  return { receipts }
+  return { receipts, addReceipt }
 }
