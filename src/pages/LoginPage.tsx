@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Button, FormGroup, Input, InputGroup, Label } from 'reactstrap'
 
 import { eye, eyeOff, receiptLogo } from '../assets'
 import './LoginPage.css'
@@ -14,46 +15,36 @@ export const LoginPage = () => {
       <img src={receiptLogo} className="login__logo" alt="receipt logo" />
       <form className="login__form">
         <hr />
-        <div className="mb-3">
-          <label htmlFor="exampleFormControlInput1" className="form-label">
-            Correo
-          </label>
-          <input
+        <FormGroup className="mb-3">
+          <Label>Correo</Label>
+          <Input
             type="email"
-            className="form-control"
-            id="exampleFormControlInput1"
             placeholder="name@example.com"
+            autoComplete="username"
           />
-        </div>
-        <label htmlFor="inputPassword" className="form-label">
-          Contraseña
-        </label>
-        <div className="input-group mb-3">
-          <input
-            type={showPassword ? 'text' : 'password'}
-            className="form-control"
-          />
-          <button
-            className="btn btn-secondary"
-            type="button"
-            id="button-addon2"
-            onClick={() => setShowPassword(!showPassword)}>
-            <img
-              src={showPassword ? eye : eyeOff}
-              width="20"
-              alt="show password"
+        </FormGroup>
+        <FormGroup>
+          <Label>Contraseña</Label>
+          <InputGroup>
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="******"
+              autoComplete="current-password"
             />
-          </button>
-        </div>
-
-        <div className="d-grid gap-2 mb-3">
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={() => navigate('/recibos')}>
-            Ingresar
-          </button>
-        </div>
+            <Button
+              color="secondary"
+              onClick={() => setShowPassword(!showPassword)}>
+              <img
+                src={showPassword ? eye : eyeOff}
+                width="20"
+                alt="show password"
+              />
+            </Button>
+          </InputGroup>
+        </FormGroup>
+        <Button color="primary" onClick={() => navigate('/recibos')}>
+          Ingresar
+        </Button>
       </form>
     </div>
   )
