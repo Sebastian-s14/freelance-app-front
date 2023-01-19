@@ -1,15 +1,16 @@
-import { PropsWithChildren } from 'react'
+// import { PropsWithChildren } from 'react'
 import { Navigate, useLocation } from 'react-router'
 
 export interface IPrivateRouteProps {
   isAuthenticated: boolean
-  //   children: JSX.Element
+  // eslint-disable-next-line no-undef
+  children: JSX.Element
 }
 
 export const PrivateRoute = ({
   isAuthenticated,
   children,
-}: PropsWithChildren<IPrivateRouteProps>) => {
+}: IPrivateRouteProps) => {
   const location = useLocation()
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" state={{ from: location }} />

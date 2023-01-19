@@ -1,9 +1,27 @@
-import { RouterProvider } from 'react-router-dom'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { useRoutes } from 'react-router-dom'
 
-import { router } from './router'
+import { useAuth } from './hooks/useAuth'
+import { routes } from './router'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  },
+})
 
 function App() {
-  return <RouterProvider router={router} />
+  const { isAuthenticated } = useAuth()
+  const routesElement = useRoutes(routes(isAuthenticated))
+  return (
+    <QueryClientProvider client={queryClient}>
+      {/* <RouterProvider router={router} /> */}
+      {routesElement}
+    </QueryClientProvider>
+  )
 }
 
 export default App

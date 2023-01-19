@@ -1,9 +1,10 @@
-import { PropsWithChildren } from 'react'
+// import { PropsWithChildren } from 'react'
 import { Navigate, useLocation } from 'react-router'
 
 type PrivateRouteProps = {
   isAuthenticated: boolean
-  //   children: JSX.Element
+  // eslint-disable-next-line no-undef
+  children: JSX.Element
 }
 
 type LocationProps = {
@@ -15,7 +16,7 @@ type LocationProps = {
 export const PublicRoute = ({
   children,
   isAuthenticated,
-}: PropsWithChildren<PrivateRouteProps>) => {
+}: PrivateRouteProps) => {
   const location = useLocation() as LocationProps
   const from = location.state?.from?.pathname || '/'
   console.log('from', from)
