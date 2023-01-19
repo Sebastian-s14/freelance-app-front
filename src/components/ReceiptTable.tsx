@@ -1,16 +1,24 @@
 import { Button, Table } from 'reactstrap'
 
-import { Receipt } from '../interfaces'
 import { DownloadButton } from '.'
 import { formatDate } from '../helpers'
 import { useReceipts } from '../hooks'
+import { Receipt } from '../interfaces'
+import { useStore } from '../store'
 
 interface ReceiptTableProps {
   receipts: Receipt[]
+  toggle: () => void
 }
 
-export const ReceiptTable = ({ receipts }: ReceiptTableProps) => {
+export const ReceiptTable = ({ receipts, toggle }: ReceiptTableProps) => {
   const { mutateDelete } = useReceipts()
+  const setActiveReceipt = useStore((state) => state.setActiveReceipt)
+
+  const handleEdit = (receipt: Receipt) => {
+    toggle()
+    setActiveReceipt(receipt)
+  }
 
   const handleDelete = (receiptId: string) => {
     console.log(receiptId)
@@ -26,8 +34,8 @@ export const ReceiptTable = ({ receipts }: ReceiptTableProps) => {
           <th scope="col">Descripción</th>
           {/* <th scope="col">Moneda</th>
           <th scope="col">Total</th> */}
-          <th scope="col">Fecha</th>
-          <th>Descargar</th>
+          <th scope="col">Última actualización</th>
+          <th>Opciones</th>
         </tr>
       </thead>
       <tbody>
@@ -41,11 +49,14 @@ export const ReceiptTable = ({ receipts }: ReceiptTableProps) => {
             {/* <td>{new Date(r.createAt).toLocaleDateString()}</td> */}
             <td>{formatDate(r.createAt)}</td>
             <td style={{ display: 'flex', gap: '8px' }}>
-              <DownloadButton />
+              <DownloadButton receiptId={r.receiptId} />
+              <Button color="warning" outline onClick={() => handleEdit(r)}>
+                ✍
+              </Button>
               <Button
                 color="danger"
                 outline
-                className="mx-3"
+                // className="mx-3"
                 onClick={() => handleDelete(r.receiptId)}>
                 ✖
               </Button>

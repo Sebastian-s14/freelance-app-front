@@ -12,38 +12,42 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Spinner,
   UncontrolledAlert,
 } from 'reactstrap'
-import { uploadImage } from '../api/cloudinary'
 
+import { uploadImage } from '../api/cloudinary'
 import { useReceipts } from '../hooks'
 import { Receipt } from '../interfaces'
 
-interface FormReceipt
-  extends Omit<Receipt, 'receiptId' | 'userId' | 'user' | 'createAt'> {}
+interface FormReceipt extends Omit<Receipt, 'userId' | 'user' | 'createAt'> {}
 interface CreateReceiptModalProps {
   modal: boolean
   toggle: () => void
+  receipt?: Receipt
 }
 
 export const CreateReceiptModal = ({
   modal,
   toggle,
+  receipt,
 }: CreateReceiptModalProps) => {
   const [image, setImage] = useState<File>()
-  const { mutateAdd } = useReceipts()
+  const { mutateAdd, isLoadingAdd, mutateUpdate, isLoadingUpdate } =
+    useReceipts()
   const { control, handleSubmit, watch, setValue } = useForm<FormReceipt>({
     defaultValues: {
-      title: '',
-      description: '',
-      address: '',
-      name: '',
-      lastName: '',
-      currency: '',
-      logo: '',
-      numberDocument: '',
-      payment: 0,
-      typeDocument: '',
+      receiptId: receipt?.receiptId || '',
+      title: receipt?.title || '',
+      description: receipt?.description || '',
+      address: receipt?.address || '',
+      name: receipt?.name || '',
+      lastName: receipt?.lastName || '',
+      currency: receipt?.currency || '',
+      logo: receipt?.logo || '',
+      numberDocument: receipt?.numberDocument || '',
+      payment: receipt?.payment || 0,
+      typeDocument: receipt?.typeDocument || '',
     },
   })
 
@@ -51,11 +55,21 @@ export const CreateReceiptModal = ({
 
   const imageLogo = watch('logo')
 
+  const isLoading = isLoadingAdd || isLoadingUpdate
+
   const onSubmit: SubmitHandler<FormReceipt> = async (data) => {
-    console.log('on submit')
-    console.log(data)
-    // addReceipt(data)
-    mutateAdd({ receipt: data, userId: 'fe2de405-c38e-4c90-ac52-da0540dfb410' })
+    if (receipt) {
+      mutateUpdate({
+        receipt: data,
+        userId: 'fe2de405-c38e-4c90-ac52-da0540dfb410',
+      })
+    } else {
+      const { receiptId, ...restData } = data
+      mutateAdd({
+        receipt: restData,
+        userId: 'fe2de405-c38e-4c90-ac52-da0540dfb410',
+      })
+    }
   }
 
   const handleImage = async () => {
@@ -64,8 +78,6 @@ export const CreateReceiptModal = ({
       setValue('logo', urlLogo)
     }
   }
-
-  // const handleToast = () => {}
 
   const saveReceipt = handleSubmit(onSubmit)
 
@@ -95,6 +107,7 @@ export const CreateReceiptModal = ({
                   id="description"
                   placeholder="Descripción"
                   type="textarea"
+                  rows={3}
                   {...field}
                 />
               )}
@@ -139,6 +152,7 @@ export const CreateReceiptModal = ({
                 <Input id="inputFile" type="file" {...field} />
               )}
             /> */}
+
             <InputGroup>
               <Input
                 id="inputFile"
@@ -149,6 +163,15 @@ export const CreateReceiptModal = ({
                 Cargar
               </Button>
             </InputGroup>
+            {receipt?.logo && (
+              <img
+                src={receipt?.logo}
+                style={{ objectFit: 'contain' }}
+                width="100"
+                height="100"
+                alt="Logo image"
+              />
+            )}
             {imageLogo && (
               <UncontrolledAlert color="success" className="mt-3">
                 Logo subido correctamente
@@ -224,10 +247,16 @@ export const CreateReceiptModal = ({
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={saveReceipt}>
-          Guardar
+        <Button color="primary" onClick={saveReceipt} disabled={isLoading}>
+          {isLoading ? (
+            <Spinner color="primary" />
+          ) : receipt ? (
+            'Actualizar'
+          ) : (
+            'Guardar'
+          )}
         </Button>
-        <Button color="secondary" onClick={toggle}>
+        <Button color="secondary" onClick={toggle} disabled={isLoading}>
           Cancelar
         </Button>
       </ModalFooter>
