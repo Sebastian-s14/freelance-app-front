@@ -1,4 +1,4 @@
-import { Navigate, RouteObject } from 'react-router-dom'
+import { Navigate, type RouteObject } from 'react-router-dom'
 
 import { DashboardPage, LoginPage } from '../pages'
 import { PrivateRoute } from './PrivateRoutes'
@@ -46,6 +46,6 @@ export const routes = (isAuthenticated: boolean): RouteObject[] => [
   },
   {
     path: '*',
-    element: <Navigate to="login" />,
+    element: <Navigate to="/login" />,
   },
 ]

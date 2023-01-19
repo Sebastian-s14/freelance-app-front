@@ -1,16 +1,27 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Button, Navbar, NavbarBrand } from 'reactstrap'
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Navbar,
+  NavbarBrand,
+} from 'reactstrap'
 
 import { CreateReceiptModal, ReceiptTable } from '../components'
+import { useAuth } from '../hooks'
 import { useReceipts } from '../hooks/useReceipts'
+
 import './DashboardPage.css'
 
 export const DashboardPage = () => {
-  const { receipts } = useReceipts()
-
+  const { receipts, refetch } = useReceipts()
   const [modal, setModal] = useState(false)
-  const navigate = useNavigate()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const { logout } = useAuth()
+
+  const toggleDropdown = () => setDropdownOpen((prevState) => !prevState)
 
   const toggle = () => setModal(!modal)
 
@@ -18,16 +29,29 @@ export const DashboardPage = () => {
     <div className="dashboard__container">
       <Navbar color="dark" dark>
         <NavbarBrand>Dashaboard</NavbarBrand>
-        <Button color="danger" onClick={() => navigate('/login')}>
+        <Dropdown
+          isOpen={dropdownOpen}
+          toggle={toggleDropdown}
+          direction="down">
+          <DropdownToggle caret>user name</DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem header>Opciones</DropdownItem>
+            <DropdownItem onClick={logout}>Salir</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        {/* <Button color="danger" onClick={() => navigate('/login')}>
           Salir
-        </Button>
+        </Button> */}
       </Navbar>
       <div className="container mx-auto mt-5">
         <h2>Mis recibos</h2>
-        <Button color="success" onClick={toggle}>
-          Crear nuevo recibo
-        </Button>
-        <ReceiptTable receipts={receipts} />
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button color="success" onClick={toggle}>
+            Crear nuevo recibo
+          </Button>
+          <Button onClick={() => refetch()}>Recargar</Button>
+        </div>
+        <ReceiptTable receipts={receipts || []} />
       </div>
       <CreateReceiptModal modal={modal} toggle={toggle} />
     </div>

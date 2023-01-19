@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Button, FormGroup, Input, InputGroup, Label } from 'reactstrap'
 
 import { eye, eyeOff, receiptLogo } from '../assets'
+import { useAuth } from '../hooks'
+
 import './LoginPage.css'
 
 export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const navigate = useNavigate()
+
+  const { login } = useAuth()
 
   return (
     <div className="login__container container">
@@ -33,6 +35,7 @@ export const LoginPage = () => {
             />
             <Button
               color="secondary"
+              outline
               onClick={() => setShowPassword(!showPassword)}>
               <img
                 src={showPassword ? eye : eyeOff}
@@ -42,7 +45,7 @@ export const LoginPage = () => {
             </Button>
           </InputGroup>
         </FormGroup>
-        <Button color="primary" onClick={() => navigate('/recibos')}>
+        <Button color="primary" onClick={login}>
           Ingresar
         </Button>
       </form>

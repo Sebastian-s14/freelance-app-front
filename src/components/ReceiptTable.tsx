@@ -3,12 +3,20 @@ import { Button, Table } from 'reactstrap'
 import { Receipt } from '../interfaces'
 import { DownloadButton } from '.'
 import { formatDate } from '../helpers'
+import { useReceipts } from '../hooks'
 
 interface ReceiptTableProps {
   receipts: Receipt[]
 }
 
 export const ReceiptTable = ({ receipts }: ReceiptTableProps) => {
+  const { mutateDelete } = useReceipts()
+
+  const handleDelete = (receiptId: string) => {
+    console.log(receiptId)
+    mutateDelete(receiptId)
+  }
+
   return (
     <Table className="mt-3" responsive>
       <thead>
@@ -34,7 +42,11 @@ export const ReceiptTable = ({ receipts }: ReceiptTableProps) => {
             <td>{formatDate(r.createAt)}</td>
             <td style={{ display: 'flex', gap: '8px' }}>
               <DownloadButton />
-              <Button color="danger" outline className="mx-3">
+              <Button
+                color="danger"
+                outline
+                className="mx-3"
+                onClick={() => handleDelete(r.receiptId)}>
                 ✖
               </Button>
             </td>

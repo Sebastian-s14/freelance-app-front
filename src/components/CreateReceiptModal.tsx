@@ -1,17 +1,22 @@
-import { useForm, SubmitHandler, Controller } from 'react-hook-form'
+import { useState } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import {
+  Button,
   Form,
   FormGroup,
+  Input,
+  InputGroup,
+  InputGroupText,
   Label,
   Modal,
   ModalBody,
-  ModalHeader,
-  Input,
   ModalFooter,
-  Button,
+  ModalHeader,
+  UncontrolledAlert,
 } from 'reactstrap'
-import { useReceipts } from '../hooks'
+import { uploadImage } from '../api/cloudinary'
 
+import { useReceipts } from '../hooks'
 import { Receipt } from '../interfaces'
 
 interface FormReceipt
@@ -25,8 +30,9 @@ export const CreateReceiptModal = ({
   modal,
   toggle,
 }: CreateReceiptModalProps) => {
-  const { addReceipt } = useReceipts()
-  const { control, handleSubmit } = useForm<FormReceipt>({
+  const [image, setImage] = useState<File>()
+  const { mutateAdd } = useReceipts()
+  const { control, handleSubmit, watch, setValue } = useForm<FormReceipt>({
     defaultValues: {
       title: '',
       description: '',
@@ -41,11 +47,25 @@ export const CreateReceiptModal = ({
     },
   })
 
-  const onSubmit: SubmitHandler<FormReceipt> = (data) => {
+  const watchCurrency = watch('currency')
+
+  const imageLogo = watch('logo')
+
+  const onSubmit: SubmitHandler<FormReceipt> = async (data) => {
     console.log('on submit')
     console.log(data)
-    addReceipt(data)
+    // addReceipt(data)
+    mutateAdd({ receipt: data, userId: 'fe2de405-c38e-4c90-ac52-da0540dfb410' })
   }
+
+  const handleImage = async () => {
+    if (image) {
+      const urlLogo = await uploadImage(image)
+      setValue('logo', urlLogo)
+    }
+  }
+
+  // const handleToast = () => {}
 
   const saveReceipt = handleSubmit(onSubmit)
 
@@ -112,13 +132,28 @@ export const CreateReceiptModal = ({
           </FormGroup>
           <FormGroup>
             <Label for="inputFile">Logo</Label>
-            <Controller
+            {/* <Controller
               name="logo"
               control={control}
               render={({ field }) => (
-                <Input id="inputFile" type="text" {...field} />
+                <Input id="inputFile" type="file" {...field} />
               )}
-            />
+            /> */}
+            <InputGroup>
+              <Input
+                id="inputFile"
+                type="file"
+                onChange={(e) => setImage(e.target.files![0])}
+              />
+              <Button onClick={handleImage} outline>
+                Cargar
+              </Button>
+            </InputGroup>
+            {imageLogo && (
+              <UncontrolledAlert color="success" className="mt-3">
+                Logo subido correctamente
+              </UncontrolledAlert>
+            )}
           </FormGroup>
           <FormGroup>
             <Label for="select">Tipo de documento</Label>
@@ -165,19 +200,26 @@ export const CreateReceiptModal = ({
           </FormGroup>
           <FormGroup>
             <Label for="payment">Monto a cobrar</Label>
-            <Controller
-              name="payment"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  id="payment"
-                  type="number"
-                  placeholder="1000"
-                  min={0}
-                  {...field}
-                />
+            <InputGroup>
+              {watchCurrency !== '' && (
+                <InputGroupText>
+                  {watchCurrency === 'USD' ? '$' : 'S/.'}
+                </InputGroupText>
               )}
-            />
+              <Controller
+                name="payment"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    id="payment"
+                    // type="number"
+                    placeholder="1000"
+                    min={0}
+                    {...field}
+                  />
+                )}
+              />
+            </InputGroup>
           </FormGroup>
         </Form>
       </ModalBody>

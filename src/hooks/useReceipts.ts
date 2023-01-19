@@ -1,33 +1,44 @@
-import axios, { AxiosResponse } from 'axios'
-import { useCallback, useEffect, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { Receipt } from '../interfaces'
+import { addReceipt, deleteReceipt, getReceipts } from '../api/receipts'
 
 export const useReceipts = () => {
-  const [receipts, setReceipts] = useState<Receipt[]>([])
+  const queryClient = useQueryClient()
+  const {
+    data: receipts,
+    isLoading: isLoadingReceipts,
+    refetch,
+  } = useQuery({
+    queryKey: ['receipts'],
+    queryFn: getReceipts,
+  })
 
-  const getReceipts = useCallback(() => {
-    axios
-      .get('http://localhost:5250/api/receipt')
-      .then(({ data }: AxiosResponse<Receipt[]>) => setReceipts(data))
-      .catch(() => console.log('algo salió mal'))
-  }, [])
+  const {
+    mutate: mutateAdd,
+    isLoading: isLoadingAdd,
+    isSuccess: isSuccessAdd,
+  } = useMutation({
+    mutationFn: addReceipt,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['receipts'] })
+    },
+  })
 
-  const addReceipt = (
-    receipt: Omit<Receipt, 'receiptId' | 'userId' | 'user' | 'createAt'>,
-  ) => {
-    axios
-      .post('http://localhost:5250/api/receipt', {
-        ...receipt,
-        userId: 'fe2de405-c38e-4c90-ac52-da0540dfb410',
-      })
-      .then(({ data }) => console.log(data))
-      .catch(() => console.log('error al agregar recibo'))
+  const { mutate: mutateDelete, isLoading: isLoadingDelete } = useMutation({
+    mutationFn: deleteReceipt,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['receipts'] })
+    },
+  })
+
+  return {
+    receipts,
+    isLoadingReceipts,
+    refetch,
+    mutateAdd,
+    isLoadingAdd,
+    isSuccessAdd,
+    mutateDelete,
+    isLoadingDelete,
   }
-
-  useEffect(() => {
-    getReceipts()
-  }, [getReceipts])
-
-  return { receipts, addReceipt }
 }

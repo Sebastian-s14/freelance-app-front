@@ -11,13 +11,15 @@
     "format-check": "prettier --check ."
   },
   "dependencies": {
+    "@tanstack/react-query": "^4.22.0",
     "axios": "^1.2.3",
     "bootstrap": "^5.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.42.1",
     "react-router-dom": "^6.6.2",
-    "reactstrap": "^9.1.5"
+    "reactstrap": "^9.1.5",
+    "zustand": "^4.3.2"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.6",

@@ -18,7 +18,7 @@ export const PublicRoute = ({
   isAuthenticated,
 }: PrivateRouteProps) => {
   const location = useLocation() as LocationProps
-  const from = location.state?.from?.pathname || '/'
+  const from = location.state?.from?.pathname || '/recibos'
   console.log('from', from)
   if (isAuthenticated) return <Navigate to={from} replace={true} />
   return children
